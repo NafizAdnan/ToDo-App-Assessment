@@ -1,0 +1,129 @@
+{
+    "info": {
+      "name": "Todo App API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Register",
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass\"\n}"
+          },
+          "url": { "raw": "{{base_url}}/register/", "host": ["{{base_url}}"], "path": ["register", ""] }
+        }
+      },
+      {
+        "name": "Login (Get Token)",
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass\"\n}"
+          },
+          "url": { "raw": "{{base_url}}/token/", "host": ["{{base_url}}"], "path": ["token", ""] }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "let data = pm.response.json();",
+                "pm.collectionVariables.set(\"access_token\", data.access);",
+                "pm.collectionVariables.set(\"refresh_token\", data.refresh);"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Refresh Token",
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+          },
+          "url": { "raw": "{{base_url}}/token/refresh/", "host": ["{{base_url}}"], "path": ["token", "refresh", ""] }
+        }
+      },
+      {
+        "name": "Create Task",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{access_token}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"title\": \"My Task\",\n  \"description\": \"Details\",\n  \"due_date\": \"2024-07-15T18:00:00Z\",\n  \"priority\": \"medium\"\n}"
+          },
+          "url": { "raw": "{{base_url}}/tasks/", "host": ["{{base_url}}"], "path": ["tasks", ""] }
+        },
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "let data = pm.response.json();",
+                "pm.collectionVariables.set(\"task_id\", data.id);"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "List Tasks",
+        "request": {
+          "method": "GET",
+          "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+          "url": { "raw": "{{base_url}}/tasks/", "host": ["{{base_url}}"], "path": ["tasks", ""] }
+        }
+      },
+      {
+        "name": "Get Task",
+        "request": {
+          "method": "GET",
+          "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+          "url": { "raw": "{{base_url}}/tasks/{{task_id}}/", "host": ["{{base_url}}"], "path": ["tasks", "{{task_id}}", ""] }
+        }
+      },
+      {
+        "name": "Update Task",
+        "request": {
+          "method": "PUT",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{access_token}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"title\": \"Updated Task\",\n  \"description\": \"Updated details\",\n  \"due_date\": \"2024-07-16T18:00:00Z\",\n  \"priority\": \"high\"\n}"
+          },
+          "url": { "raw": "{{base_url}}/tasks/{{task_id}}/", "host": ["{{base_url}}"], "path": ["tasks", "{{task_id}}", ""] }
+        }
+      },
+      {
+        "name": "Delete Task",
+        "request": {
+          "method": "DELETE",
+          "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+          "url": { "raw": "{{base_url}}/tasks/{{task_id}}/", "host": ["{{base_url}}"], "path": ["tasks", "{{task_id}}", ""] }
+        }
+      }
+    ],
+    "variable": [
+      { "key": "base_url", "value": "http://localhost:8000/api" },
+      { "key": "access_token", "value": "" },
+      { "key": "refresh_token", "value": "" },
+      { "key": "task_id", "value": "" }
+    ]
+  }
